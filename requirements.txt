@@ -1,0 +1,9 @@
+Django>=5.2,<6.2
+PyMuPDF>=1.24,<2
+requests>=2.31,<3
+
+
+docling>=2.50,<3
+
+
+opencv-python-headless>=4.8,<5

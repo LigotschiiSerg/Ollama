@@ -1,0 +1,3 @@
+{% load static %}
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PDF Desk</title><link rel="stylesheet" href="{% static 'documents/style.css' %}"></head>
+<body><header><a href="{% url 'index' %}"><strong>PDF Desk</strong></a></header><main>{% for message in messages %}<div class="notice">{{ message }}</div>{% endfor %}{% block content %}{% endblock %}</main></body></html>

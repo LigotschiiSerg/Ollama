@@ -1,0 +1,26 @@
+{% extends 'documents/base.html' %}
+{% block content %}
+<p><a href="{% url 'document' table.page.document_id %}">← Документ</a></p>
+<h1>{{ table.title|default:'Таблица без названия' }}</h1>
+<p class="muted">Начало: страница {{ table.page.number }} · Тип: {{ detected_type }} · Строк заголовка: {{ detected_headers }}</p>
+<div class="panel">
+<h3>Название и заголовки</h3>
+<form method="post" action="{% url 'edit_table' table.pk %}">{% csrf_token %}
+<label>Название таблицы <input name="title" value="{{ table.title }}" maxlength="500" style="width:95%"></label>
+<label>Тип <select name="table_type"><option value="auto" {% if table.table_type == 'auto' %}selected{% endif %}>Автоматически</option><option value="matrix" {% if table.table_type == 'matrix' %}selected{% endif %}>Обычная таблица</option><option value="key_value" {% if table.table_type == 'key_value' %}selected{% endif %}>Ключ — значение</option><option value="hierarchical" {% if table.table_type == 'hierarchical' %}selected{% endif %}>Многоуровневый заголовок</option></select></label>
+<label>Строк заголовка (0 — автоматически): <input name="header_rows" type="number" min="0" max="20" value="{{ table.header_rows }}"></label>
+<button type="submit">Сохранить настройки</button></form>
+</div>
+<div class="panel"><div class="tablewrap"><table class="grid-table"><tbody>
+{% for row in rows %}<tr>{% for cell in row.cells %}
+{% if row.header %}<th rowspan="{{ cell.rowspan }}" colspan="{{ cell.colspan }}">{% else %}<td rowspan="{{ cell.rowspan }}" colspan="{{ cell.colspan }}">{% endif %}
+<details><summary>{{ cell.value|default:'(пусто)'|truncatechars:180 }}</summary><form method="post" action="{% url 'edit_cell' cell.pk %}">{% csrf_token %}<textarea name="value" rows="3">{{ cell.value }}</textarea><button>Сохранить</button></form></details>
+{% if row.header %}</th>{% else %}</td>{% endif %}
+{% endfor %}</tr>{% empty %}<tr><td>Таблица пуста</td></tr>{% endfor %}
+</tbody></table></div></div>
+<p class="muted">Объединения будут отображены только если распознавание сохранило rowspan/colspan. В SQLite экспортируются плоские заголовки.</p>
+{% endblock %}
+<div class="panel"><h3>Логическая таблица</h3><p>Исходные страницы:
+{% for part in logical_parts %}{% if not forloop.first %}, {% endif %}<a href="{% url 'table' part.pk %}">{{ part.page.number }}</a>{% endfor %}.
+{% if logical_parts|length > 1 %}Все фрагменты экспортируются как одна таблица SQLite; <code>_source_page</code> указывает страницу каждой строки.{% endif %}
+</p></div>

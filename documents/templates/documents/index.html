@@ -1,0 +1,3 @@
+{% extends 'documents/base.html' %}{% block content %}
+<h1>Документы</h1><section class="panel"><h2>Добавить PDF</h2><p class="muted">Выберите файл или введите разрешённую HTTPS-ссылку. Максимум 20 МБ.</p><form method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button>Загрузить</button></form></section>
+<section class="panel"><h2>Архив</h2><div class="tablewrap"><table><thead><tr><th>Название</th><th>Статус</th><th>Дата</th></tr></thead><tbody>{% for doc in documents %}<tr><td><a href="{% url 'document' doc.pk %}">{{ doc.title }}</a></td><td>{{ doc.get_status_display }}</td><td>{{ doc.created_at|date:'d.m.Y H:i' }}</td></tr>{% empty %}<tr><td colspan="3">Пока нет документов</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
